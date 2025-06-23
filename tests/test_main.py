@@ -14,8 +14,9 @@ import configparser
 config = configparser.ConfigParser()
 config.read(os.getenv('DEFAULT_CONFIG'))
 
+
 # Use an in-memory SQLite database for testing
-DATABASE_URL_TEST = config.get("Database", "DATABASE_URL", fallback=None)
+DATABASE_URL_TEST = config.get("Database", "TEST_DATABASE_URL") # Using a file-based SQLite for simpler inspection, can be :memory:
 engine_test = create_engine(DATABASE_URL_TEST)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine_test)
 
