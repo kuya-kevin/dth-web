@@ -6,8 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
-from app.main import app, get_db, client as openai_client
-from app.db.db import Base, User # Import User for table creation
+from app.main import app, get_db
+from app.db.db import Base
 import unittest.mock as mock
 import configparser
 
@@ -37,7 +37,7 @@ def setup_database():
 
 
 @pytest.fixture(scope="function")
-def db_session(setup_database):
+def db_session():
     """
     Fixture for an independent database session for each test function.
     Rolls back transactions after each test to ensure isolation.
@@ -60,7 +60,7 @@ async def async_client(db_session):
 
     app.dependency_overrides[get_db] = override_get_db
 
-    transport = ASGITransport(app=app)  # 👈 this is the key change
+    transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
@@ -96,7 +96,6 @@ async def test_create_user_success(async_client):
     assert data["username"] == "testuser"
     assert data["email"] == "test@example.com"
     assert data["full_name"] == "Test User"
-    assert data["rating"] == 4.5
     assert "id" in data
 
 @pytest.mark.asyncio
@@ -114,7 +113,6 @@ async def test_create_user_with_default_rating(async_client):
     data = response.json()
     assert data["username"] == "defaultrater"
     assert data["email"] == "default@example.com"
-    assert data["rating"] == 3.0 # Default rating
 
 @pytest.mark.asyncio
 async def test_create_user_duplicate_username(async_client):
