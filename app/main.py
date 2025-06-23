@@ -2,7 +2,7 @@ import os
 import configparser
 
 from fastapi import FastAPI, HTTPException, Depends
-from app.db.db import SessionLocal, User
+from .db.db import SessionLocal, User
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 from sqlalchemy.orm import Session
